@@ -1,7 +1,18 @@
+"""
+
+References: 
+[1] Robosuite 
+
+Author: Ekansh Sharma <ekansh.sharma@smail.inf.h-brs.de>
+
+"""
+
 import numpy as np
 
-from robosuite.models.objects import MujocoXMLObject
-from robosuite.utils.mjcf_utils import array_to_string
+from robosuite.models.objects import MujocoXMLObject, MujocoXMLFurnitureObject
+from robosuite.utils.mjcf_utils import array_to_string, find_elements
+
+
 
 class SoftTorsoObject(MujocoXMLObject):
     """
@@ -116,3 +127,16 @@ class BoxObject(MujocoXMLObject):
 
     def __init__(self, name):
         super().__init__("my_models/assets/objects/box.xml", name=name)
+
+
+class ContainerObject(MujocoXMLObject):
+    """
+    Container object
+    """
+
+    def __init__(self, name):
+        xml_path = "./my_models/assets/objects/container.xml"
+        super().__init__(
+            xml_path, name=name, obj_type="all", duplicate_collision_geoms=True
+        )
+        
