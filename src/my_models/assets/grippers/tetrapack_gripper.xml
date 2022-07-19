@@ -1,0 +1,20 @@
+<mujoco model="ultrasound_probe_gripper">
+  <asset>
+    <texture file="../textures/milk.png" name="tex-milk" type="2d"/>
+    <material name="milk" reflectance="0.5" texrepeat="1 1" texture="tex-milk" texuniform="true"/>  </asset>
+  <worldbody>
+      <body name="gripper_base" pos="0 0 0.0524" quat="0. 0.707 0. 0.707">
+        <site name="ft_frame" group="0"/> 
+        <composite type="box" count="6 4 4" spacing="0.05" solrefsmooth="-1324.17 -17.59">
+          <geom type="capsule" size="0.0075 0.025" rgba=".8 .2 .1 1" mass="0.001" friction="0.01 0.005 0.0001" contype="0" group="0"/>
+          <skin material="milk" texcoord="true"/> 
+        </composite>
+        <site name="grip_site" size="0.01 0.01 0.01" rgba="1 0 0 0.5" type="sphere" group="0"/>
+        <site name="grip_site_cylinder" size="0.005 0.01" rgba="0 1 0 0.3" type="cylinder" group="0"/>
+    </body>
+  </worldbody>
+  <sensor>
+        <force name="force_ee" site="ft_frame"/>
+        <torque name="torque_ee" site="ft_frame"/>
+    </sensor>
+</mujoco>
