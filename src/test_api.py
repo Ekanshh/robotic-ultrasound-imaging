@@ -1,5 +1,5 @@
 from turtle import pos
-from my_models.objects import ContainerObject
+from my_models.objects import ContainerObject, ContainerWithTetrapacksObject
 from my_models.objects.xml_objects import BoxObject, SoftBoxObject
 from robosuite.models import MujocoWorldBase
 
@@ -27,10 +27,9 @@ from robosuite.models.objects.composite import HammerObject, PotWithHandlesObjec
 from robosuite.models.objects.composite_body import HingedBoxObject, ContainerWithBox
 from robosuite.utils.mjcf_utils import new_joint
 
-sphere = ContainerObject(
-    name="container")
+sphere = ContainerWithTetrapacksObject(
+    name="container_with_tetrapacks")
 mujoco_obj= sphere.get_obj()
-print(sphere.bottom_offset)
 mujoco_obj.set('pos', '1.0 0 1.0')
 world.merge_assets(sphere)
 world.worldbody.append(mujoco_obj)

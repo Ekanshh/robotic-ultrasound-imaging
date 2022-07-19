@@ -1,0 +1,54 @@
+<mujoco model="container_with_tetrapacks">
+  <asset>
+    <texture file="../textures/skin.png" type="2d" name="skin-tex"/>
+    <material name="skin-material" reflectance="0.5" texrepeat="1 1" texture="skin-tex"/>
+  </asset>
+  <worldbody>
+    <body>
+      <body name="object">
+        <!--Container-->
+        <body name="bottom_wall" pos="0. 0. 0." quat="0. 0. 0.707 0.707">
+          <inertial pos="0. 0. 0" quat="0. 0. 0.707 0.707" mass="2.43455" diaginertia="0.0913751 0.0521615 0.043714"/>
+          <geom size="0.22 0.01 0.22" type="box" friction="1 1 1" group="0"/>
+        </body>
+        <body name="right_side_wall" pos="-0.22 0. 0.22" quat="0.707 0. 0. 0.707">
+          <inertial pos="-0.22 0. 0.22" quat="0.707 0. 0. 0.707" mass="2.43455" diaginertia="0.0913751 0.0521615 0.043714"/>
+          <geom size="0.22 0.01 .22" type="box" friction="1 1 1" group="0"/>
+        </body>
+        <body name="left_side_wall" pos="0.22 0. 0.22" quat="0.707 0. 0. 0.707">
+          <inertial pos="0.22 0. 0.22" quat="0.707 0. 0. 0.707" mass="2.43455" diaginertia="0.0913751 0.0521615 0.043714"/>
+          <geom size="0.22 0.01 .22" type="box" friction="1 1 1" group="0"/>
+        </body>
+        <body name="backend_wall" pos="0. -0.22 0.22" quat="1. 0. 0. 0.">
+          <inertial pos="0. -0.22 0.22" quat="1. 0. 0. 0." mass="2.43455" diaginertia="0.0913751 0.0521615 0.043714"/>
+          <geom size="0.22 0.01 .22" type="box" friction="1 1 1" group="0"/>
+        </body>
+        <body name="top_wall" pos="0. 0. 0.44" quat="0. 0. 0.707 0.707">
+          <inertial pos="0. 0. 0.44" quat="0. 0. 0.707 0.707" mass="2.43455" diaginertia="0.0913751 0.0521615 0.043714"/>
+          <geom size="0.22 0.01 .22" type="box" friction="1 1 1" group="0"/>
+        </body> 
+        <body name="B0" pos="0. 0. 0.06" quat="0.5 0.5 -0.5 -0.5">
+          <composite type="box" count="6 3 3" spacing="0.05" solrefsmooth="-1324.17 -17.59">
+            <geom type="capsule" size="0.0075 0.025" rgba=".8 .2 .1 1" mass="0.1" friction="0.01 0.005 0.0001" contype="0" group="0"/>
+            <skin material="skin-material" texcoord="true"/>
+          </composite>
+        </body> 
+        <!-- <body name="B1" pos="0.06 0. 0.06" quat="0.5 0.5 -0.5 -0.5">
+          <composite type="box" count="6 3 3" spacing="0.05" solrefsmooth="-1324.17 -17.59">
+            <geom type="capsule" size="0.0075 0.025" rgba=".8 .2 .1 1" mass="0.001" friction="0.01 0.005 0.0001" contype="0" group="0"/>
+            <skin material="skin-material" texcoord="true"/> 
+          </composite>
+        </body>
+        <body name="B2" pos="-0.06 0. 0.06" quat="0.5 0.5 -0.5 -0.5">
+          <composite type="box" count="6 3 3" spacing="0.05" solrefsmooth="-1324.17 -17.59">
+            <geom type="capsule" size="0.0075 0.025" rgba=".8 .2 .1 1" mass="0.001" friction="0.01 0.005 0.0001" contype="0" group="0"/>
+            <skin material="skin-material" texcoord="true"/> 
+          </composite>
+        </body> -->
+      </body>
+      <site rgba="0 0 0 0" size="0.01" pos="0. 0.  0." name="bottom_site"/>
+      <site rgba="0 0 0 0" size="0.01" pos="0. 0. 0.44" name="top_site"/>
+      <site rgba="0 0 0 0" size="0.05" pos="0.05 0.05 0" name="horizontal_radius_site"/>
+    </body>
+  </worldbody>
+</mujoco>
