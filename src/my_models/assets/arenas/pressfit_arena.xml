@@ -1,12 +1,3 @@
-<!--
-References: 
-[1] Robosuite 
--->
-
-<!--
-Author: Ekansh Sharma <ekansh.sharma@smail.inf.h-brs.de>
--->
-
 <mujoco model="pressfit_arena">
   <asset>
     <texture builtin="gradient" height="256" rgb1=".9 .9 1." rgb2=".2 .3 .4" type="skybox" width="256"/>

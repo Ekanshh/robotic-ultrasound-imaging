@@ -20,7 +20,7 @@ from robosuite.models.base import MujocoModel
 
 import robosuite.utils.transform_utils as T
 
-from my_models.objects import SoftTorsoObject, BoxObject, SoftBoxObject
+from my_models.objects import SoftTorsoObject, SoftBoxObject
 from my_models.tasks import UltrasoundTask
 from my_models.arenas import UltrasoundArena
 from utils.quaternion import distance_quat, difference_quat

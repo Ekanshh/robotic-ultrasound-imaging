@@ -120,26 +120,6 @@ class SoftBoxObject(MujocoXMLObject):
         composite.set('solrefsmooth', array_to_string(solref))
 
 
-class BoxObject(MujocoXMLObject):
-    """
-    Box object
-    """
-
-    def __init__(self, name):
-        super().__init__("my_models/assets/objects/box.xml", name=name)
-
-
-class ContainerObject(MujocoXMLObject):
-    """
-    Container object
-    """
-
-    def __init__(self, name):
-        xml_path = "./my_models/assets/objects/container.xml"
-        super().__init__(
-            xml_path, name=name, obj_type="all", duplicate_collision_geoms=True
-        )
-
 class ContainerWithTetrapacksObject(MujocoXMLObject):
     """
     Container object

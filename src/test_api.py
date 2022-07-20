@@ -1,6 +1,6 @@
 from turtle import pos
-from my_models.objects import ContainerObject, ContainerWithTetrapacksObject
-from my_models.objects.xml_objects import BoxObject, SoftBoxObject
+from my_models.objects import  ContainerWithTetrapacksObject
+from my_models.objects.xml_objects import SoftBoxObject
 from robosuite.models import MujocoWorldBase
 
 world = MujocoWorldBase()
@@ -9,9 +9,9 @@ from robosuite.models.robots import Panda
 
 mujoco_robot = Panda()
 
-from robosuite.models.grippers import gripper_factory
+from my_models.grippers import TetrapackGripper
 
-gripper = gripper_factory('PandaGripper')
+gripper = TetrapackGripper()
 mujoco_robot.add_gripper(gripper)
 
 mujoco_robot.set_base_xpos([0, 0, 0])
@@ -27,21 +27,22 @@ from robosuite.models.objects.composite import HammerObject, PotWithHandlesObjec
 from robosuite.models.objects.composite_body import HingedBoxObject, ContainerWithBox
 from robosuite.utils.mjcf_utils import new_joint
 
-sphere = ContainerWithTetrapacksObject(
-    name="container_with_tetrapacks")
-mujoco_obj= sphere.get_obj()
-mujoco_obj.set('pos', '1.0 0 1.0')
-world.merge_assets(sphere)
-world.worldbody.append(mujoco_obj)
+# .sphere = ContainerWithTetrapacksObject(
+#     name="container_with_tetrapacks")
+# mujoco_obj= sphere.get_obj()
+# mujoco_obj.set('pos', '1.0 0 1.0')
+# mujoco_obj.set('quat', '0.707 0. 0. 0.707')
+# world.merge_assets(sphere)
+# worldworldbody.append(mujoco_obj)
 
-# box = SoftBoxObject(
-#     name="soft_box"
-# )
-# mujoco_obj2=box.get_obj()
-# # print(mujoco_obj2.bottom_offset)
-# mujoco_obj2.set('pos', '1.0 0. 1.0')
-# world.merge_assets(box)
-# world.worldbody.append(mujoco_obj2)
+box = SoftBoxObject(
+    name="soft_box"
+)
+mujoco_obj2=box.get_obj()
+# print(mujoco_obj2.bottom_offset)
+mujoco_obj2.set('pos', '1.0 0. 1.0')
+world.merge_assets(box)
+world.worldbody.append(mujoco_obj2)
 
 hammer = HammerObject(
     name="hammer"

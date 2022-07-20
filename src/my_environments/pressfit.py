@@ -1,14 +1,17 @@
-from collections import OrderedDict
 
+# Python imports
 import numpy as np
-from sympy import false
-from my_models.objects.xml_objects import ContainerObject, SoftBoxObject
-
+from my_models.grippers.tetrapack_gripper import TetrapackGripper
+# Local imports
+from my_models.objects import ContainerWithTetrapacksObject
+from my_models.objects.xml_objects import SoftBoxObject
+# Robosuite imports
 from robosuite.environments.manipulation.single_arm_env import SingleArmEnv
 from robosuite.models.arenas import TableArena
 from robosuite.models.tasks import ManipulationTask
 from robosuite.utils.observables import Observable, sensor
 from robosuite.utils.placement_samplers import UniformRandomSampler
+from robosuite.utils.mjcf_utils import find_elements
 
 
 class Pressfit(SingleArmEnv):
@@ -18,7 +21,7 @@ class Pressfit(SingleArmEnv):
         robots,
         env_configuration="default",
         controller_configs=None,
-        gripper_types="default",
+        gripper_types=None,
         initialization_noise="default",
         use_latch=True,
         use_camera_obs=True,
@@ -44,20 +47,17 @@ class Pressfit(SingleArmEnv):
         renderer="mujoco",
         renderer_config=None,
     ):
+
         # settings for table top (hardcoded since it's not an essential part of the environment)
-        self.table_full_size = (0.8, 0.3, 0.05)
-        self.table_offset = (-0.2, -0.35, 0.8)
+        self.table_full_size = np.array((0.8, 0.3, 0.05))
+        self.table_offset =  np.array((0, 0, 0.8))
 
         # reward configuration
-        self.use_latch = use_latch
         self.reward_scale = reward_scale
         self.reward_shaping = reward_shaping
 
         # whether to use ground-truth object states
-        self.use_object_obs = use_object_obs
-
-        # object placement initializer
-        self.placement_initializer = placement_initializer
+        self.use_object_obs = True
 
         super().__init__(
             robots=robots,
@@ -108,40 +108,36 @@ class Pressfit(SingleArmEnv):
 
         # Modify default agentview camera
         # camera mode="fixed" name="frontview" pos="3.0041728459287134 -8.978002622257044e-08 1.6182244956398628" quat="0.5608418583869934 0.43064647912979126 0.4306463599205017 0.5608418583869934"
-        mujoco_arena.set_camera( 
-            camera_name="frontview",
-            pos=[3.0041728459287134, -8.978002622257044e-08, 1.6182244956398628],
-            quat=[0.5608418583869934, 0.43064647912979126, 0.4306463599205017, 0.5608418583869934]
-            )
-
-        # initialize objects of interest
-        self.container = ContainerObject(
-            name="Container",
+        mujoco_arena.set_camera(
+            camera_name="agentview",
+            pos=[1.0666432116509934, 1.4903257668114777e-08, 2.0563394967349096],
+            quat=[0.6530979871749878, 0.27104058861732483, 0.27104055881500244, 0.6530978679656982],
         )
 
-        # Create placement initializer
-        if self.placement_initializer is not None:
-            self.placement_initializer.reset()
-            self.placement_initializer.add_objects(self.container)
-        else:
-            self.placement_initializer = UniformRandomSampler(
-                name="ObjectSampler",
-                mujoco_objects=self.container,
-                x_range=[0.07, 0.09],
-                y_range=[-0.01, 0.01],
-                rotation=(-np.pi / 2.0 - 0.25, -np.pi / 2.0),
-                rotation_axis="z",
-                ensure_object_boundary_in_range=False,
-                ensure_valid_placement=True,
-                reference_pos=(-5.0, 0, 0),
-            )
+        ################################
+        # Initialize objects of interest
+        ################################
 
+        # Object 1: Container with tetrapacks
+        self.container = ContainerWithTetrapacksObject(
+            name="container_with_tetrapacks",
+        )
+        container_obj= self.container.get_obj()
+        container_obj.set('pos', '1.0 0 1.0')
+        container_obj.set('quat', '0.707 0. 0. 0.707')
+
+        ###########################
+        # Robot end-effector object
+        ###########################
+        
         # task includes arena, robot, and objects of interest
         self.model = ManipulationTask(
             mujoco_arena=mujoco_arena,
             mujoco_robots=[robot.robot_model for robot in self.robots],
-            mujoco_objects=self.container,
+            mujoco_objects=[self.container]
         )
+
+        self.model.merge_assets(self.container)
 
     def _setup_references(self):
         """

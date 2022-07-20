@@ -1,1 +1,2 @@
 from .ultrasound_probe_gripper import UltrasoundProbeGripper
+from .tetrapack_gripper import TetrapackGripper
