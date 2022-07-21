@@ -9,7 +9,7 @@ Author: Ekansh Sharma <ekansh.sharma@smail.inf.h-brs.de>
 
 import numpy as np
 
-from robosuite.models.objects import MujocoXMLObject, MujocoXMLFurnitureObject
+from robosuite.models.objects import MujocoXMLObject
 from robosuite.utils.mjcf_utils import array_to_string, find_elements
 
 
