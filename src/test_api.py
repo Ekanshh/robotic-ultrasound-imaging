@@ -3,70 +3,37 @@ from my_models.objects import  ContainerWithTetrapacksObject
 from my_models.objects.xml_objects import SoftBoxObject
 from robosuite.models import MujocoWorldBase
 
-world = MujocoWorldBase()
 
 from robosuite.models.robots import Panda
+from my_environments import Pressfit
+from utils.common import register_gripper
+from robosuite.environments.base import register_env
 
-mujoco_robot = Panda()
+world = MujocoWorldBase()
 
 from my_models.grippers import TetrapackGripper
-
-gripper = TetrapackGripper()
-mujoco_robot.add_gripper(gripper)
-
-mujoco_robot.set_base_xpos([0, 0, 0])
-world.merge(mujoco_robot)
-
-from robosuite.models.arenas import TableArena
-
-mujoco_arena = TableArena()
-mujoco_arena.set_origin([0.8, 0, 0])
-world.merge(mujoco_arena)
 
 from robosuite.models.objects.composite import HammerObject, PotWithHandlesObject
 from robosuite.models.objects.composite_body import HingedBoxObject, ContainerWithBox
 from robosuite.utils.mjcf_utils import new_joint
 
-# .sphere = ContainerWithTetrapacksObject(
-#     name="container_with_tetrapacks")
-# mujoco_obj= sphere.get_obj()
-# mujoco_obj.set('pos', '1.0 0 1.0')
-# mujoco_obj.set('quat', '0.707 0. 0. 0.707')
-# world.merge_assets(sphere)
-# worldworldbody.append(mujoco_obj)
+register_env(Pressfit)
+register_gripper(TetrapackGripper)
 
-box = SoftBoxObject(
-    name="soft_box"
-)
-mujoco_obj2=box.get_obj()
-# print(mujoco_obj2.bottom_offset)
-mujoco_obj2.set('pos', '1.0 0. 1.0')
-world.merge_assets(box)
-world.worldbody.append(mujoco_obj2)
+mujoco_robot = Panda()
 
-hammer = HammerObject(
-    name="hammer"
-)
-mj_obj= hammer.get_obj()
-mj_obj.set('pos', '2.0 0. 1.0')
-world.merge_assets(hammer)
-world.worldbody.append(mj_obj)
+gripper =TetrapackGripper()
+mujoco_robot.add_gripper(gripper)
 
-# hingedbox = HingedBoxObject(
-#     name="hingedbox"
-# )
-# mj_obj2= hingedbox.get_obj()
-# mj_obj2.set('pos', '0.5 0.5 1.0')
-# world.merge_assets(hingedbox)
-# world.worldbody.append(mj_obj2)
+mujoco_robot.set_base_xpos([0, 0, 0])
+world.merge(mujoco_robot)
 
-# hingedbox2 = ContainerWithBox(
-#     name="container_with_box"
-# )
-# mj_obj3= hingedbox2.get_obj()
-# mj_obj3.set('pos', '0.5 0.5 1.0')
-# world.merge_assets(hingedbox2)
-# world.worldbody.append(mj_obj3)
+mujoco_arena = Pressfit(robots="Panda",  # try with other robots like "Sawyer" and "Jaco"
+    gripper_types="TetrapackGripper",
+    has_renderer=True,
+    has_offscreen_renderer=False,
+    use_camera_obs=False,)
+world.merge(mujoco_arena)
 
 model = world.get_model(mode="mujoco_py")
 

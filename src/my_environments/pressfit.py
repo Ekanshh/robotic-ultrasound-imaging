@@ -1,10 +1,9 @@
 
 # Python imports
 import numpy as np
-from my_models.grippers.tetrapack_gripper import TetrapackGripper
+from my_models.arenas.pressfit_arena import PressfitArena
 # Local imports
 from my_models.objects import ContainerWithTetrapacksObject
-from my_models.objects.xml_objects import SoftBoxObject
 # Robosuite imports
 from robosuite.environments.manipulation.single_arm_env import SingleArmEnv
 from robosuite.models.arenas import TableArena
@@ -24,14 +23,14 @@ class Pressfit(SingleArmEnv):
         gripper_types=None,
         initialization_noise="default",
         use_latch=True,
-        use_camera_obs=True,
+        use_camera_obs=False,
         use_object_obs=True,
         reward_scale=1.0,
         reward_shaping=False,
         placement_initializer=None,
         has_renderer=False,
         has_offscreen_renderer=True,
-        render_camera="frontview",
+        render_camera="customview",
         render_collision_mesh=False,
         render_visual_mesh=True,
         render_gpu_device_id=-1,
@@ -39,7 +38,7 @@ class Pressfit(SingleArmEnv):
         horizon=1000,
         ignore_done=False,
         hard_reset=True,
-        camera_names="agentview",
+        camera_names="customview",
         camera_heights=256,
         camera_widths=256,
         camera_depths=False,
@@ -49,7 +48,7 @@ class Pressfit(SingleArmEnv):
     ):
 
         # settings for table top (hardcoded since it's not an essential part of the environment)
-        self.table_full_size = np.array((0.8, 0.3, 0.05))
+        self.table_full_size = np.array((1.0, 1.0, 0.05))
         self.table_offset =  np.array((0, 0, 0.8))
 
         # reward configuration
@@ -98,21 +97,20 @@ class Pressfit(SingleArmEnv):
         self.robots[0].robot_model.set_base_xpos(xpos)
 
         # load model for table top workspace
-        mujoco_arena = TableArena(
-            table_full_size=self.table_full_size,
-            table_offset=self.table_offset,
+        mujoco_arena = PressfitArena(
+            table_full_size = self.table_full_size,
+            table_offset = self.table_offset
         )
-
+        table_top = mujoco_arena.table_top_abs
         # Arena always gets set to zero origin
         mujoco_arena.set_origin([0, 0, 0])
 
         # Modify default agentview camera
         # camera mode="fixed" name="frontview" pos="3.0041728459287134 -8.978002622257044e-08 1.6182244956398628" quat="0.5608418583869934 0.43064647912979126 0.4306463599205017 0.5608418583869934"
-        mujoco_arena.set_camera(
-            camera_name="agentview",
-            pos=[1.0666432116509934, 1.4903257668114777e-08, 2.0563394967349096],
-            quat=[0.6530979871749878, 0.27104058861732483, 0.27104055881500244, 0.6530978679656982],
-        )
+        # mujoco_arena.set_camera(
+        #     camera_name="agentview",
+        #     pos="-0.9758789255999046 -1.9886114909882024 1.2507276767101316",
+        #     quat="0.7047281265258789 0.6816641688346863 -0.16726869344711304 -0.10350527614355087")
 
         ################################
         # Initialize objects of interest
@@ -122,8 +120,10 @@ class Pressfit(SingleArmEnv):
         self.container = ContainerWithTetrapacksObject(
             name="container_with_tetrapacks",
         )
+        
+
         container_obj= self.container.get_obj()
-        container_obj.set('pos', '1.0 0 1.0')
+        container_obj.set('pos', '0.2 0.0 1.0')
         container_obj.set('quat', '0.707 0. 0. 0.707')
 
         ###########################

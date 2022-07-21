@@ -80,12 +80,12 @@ Author: Ekansh Sharma <ekansh.sharma@smail.inf.h-brs.de
             <skin material="milk" texcoord="true"/>
           </composite>
         </body> 
-        <body name="tetrapack_8" pos="0.15 0. 0.38" quat="0.5 0.5 -0.5 -0.5">
+        <!-- <body name="tetrapack_8" pos="0.15 0. 0.38" quat="0.5 0.5 -0.5 -0.5">
           <composite prefix="T8" type="box" count="6 4 4" spacing="0.05" solrefsmooth="-1324.17 -17.59">
             <geom type="capsule" size="0.0075 0.025" rgba=".8 .2 .1 1" mass="0.001" friction="0.01 0.005 0.0001" contype="0" group="0"/>
             <skin material="milk" texcoord="true"/> 
           </composite>
-        </body>
+        </body> -->
         <body name="tetrapack_9" pos="-0.15 0. 0.38" quat="0.5 0.5 -0.5 -0.5">
           <composite prefix="T9" type="box" count="6 4 4" spacing="0.05" solrefsmooth="-1324.17 -17.59">
             <geom type="capsule" size="0.0075 0.025" rgba=".8 .2 .1 1" mass="0.001" friction="0.01 0.005 0.0001" contype="0" group="0"/>
