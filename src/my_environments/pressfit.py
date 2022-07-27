@@ -1,5 +1,8 @@
 
 # Python imports
+from distutils.log import warn
+import re
+from warnings import WarningMessage
 import numpy as np
 from my_models.arenas.pressfit_arena import PressfitArena
 # Local imports
@@ -11,26 +14,29 @@ from robosuite.models.tasks import ManipulationTask
 from robosuite.utils.observables import Observable, sensor
 from robosuite.utils.placement_samplers import UniformRandomSampler
 from robosuite.utils.mjcf_utils import find_elements
+from robosuite.models.base import MujocoModel
+
 
 
 class Pressfit(SingleArmEnv):
 
     def __init__(
-        self,
+        self,       # DESCRIPTION OF PARAMETERS AT: https://robosuite.ai/docs/simulation/environment.html?highlight=use_camera_obs#:~:text=dimension%20%3Artype%3A%20int-,Robot%20Environment,%EF%83%81,-class
         robots,
         env_configuration="default",
         controller_configs=None,
-        gripper_types=None,
+        gripper_types=None, 
         initialization_noise="default",
-        use_latch=True,
-        use_camera_obs=False,
-        use_object_obs=True,
+        table_full_size=(1.0, 1.0, 0.05),       # Table properties
+        table_friction= 100*(1., 5e-3, 1e-4),   
+        use_camera_obs=False,        # if True, every observation includes rendered image(s)
+        use_object_obs=False,
         reward_scale=1.0,
         reward_shaping=False,
         placement_initializer=None,
-        has_renderer=False,
-        has_offscreen_renderer=True,
-        render_camera="customview",
+        has_renderer=False,         #  If true, render the simulation state in a viewer instead of headless mode.
+        has_offscreen_renderer=False,        #  True if using off-screen rendering
+        render_camera="customview",       # Name of camera to render if has_renderer is True. Setting this value to ‘None’ will result in the default angle being applied, which is useful as it can be dragged / panned by the user using the mouse
         render_collision_mesh=False,
         render_visual_mesh=True,
         render_gpu_device_id=-1,
@@ -42,14 +48,25 @@ class Pressfit(SingleArmEnv):
         camera_heights=256,
         camera_widths=256,
         camera_depths=False,
+        early_termination= False,
+        save_data = False,
         camera_segmentations=None,  # {None, instance, class, element}
         renderer="mujoco",
         renderer_config=None,
     ):
 
-        # settings for table top (hardcoded since it's not an essential part of the environment)
-        self.table_full_size = np.array((1.0, 1.0, 0.05))
-        self.table_offset =  np.array((0, 0, 0.8))
+        # Check if the gripper is correct
+        assert gripper_types == "TetrapackGripper",\
+            "Tried to specify gripper other than TetrapackGripper in Pressfit environment!"
+
+        # Check if the robot is correct
+        assert robots == "Panda", \
+            "Robot must be Panda!"
+
+        # Setting table properties
+        self.table_full_size = table_full_size
+        self.table_friction = table_friction
+        self.table_offset =  np.array((0.2, 0, 1.4))
 
         # reward configuration
         self.reward_scale = reward_scale
@@ -62,7 +79,7 @@ class Pressfit(SingleArmEnv):
             robots=robots,
             env_configuration=env_configuration,
             controller_configs=controller_configs,
-            mount_types="default",
+            mount_types="RethinkMount",
             gripper_types=gripper_types,
             initialization_noise=initialization_noise,
             use_camera_obs=use_camera_obs,
@@ -96,6 +113,7 @@ class Pressfit(SingleArmEnv):
         xpos = self.robots[0].robot_model.base_xpos_offset["table"](self.table_full_size[0])
         self.robots[0].robot_model.set_base_xpos(xpos)
 
+
         # load model for table top workspace
         mujoco_arena = PressfitArena(
             table_full_size = self.table_full_size,
@@ -105,13 +123,6 @@ class Pressfit(SingleArmEnv):
         # Arena always gets set to zero origin
         mujoco_arena.set_origin([0, 0, 0])
 
-        # Modify default agentview camera
-        # camera mode="fixed" name="frontview" pos="3.0041728459287134 -8.978002622257044e-08 1.6182244956398628" quat="0.5608418583869934 0.43064647912979126 0.4306463599205017 0.5608418583869934"
-        # mujoco_arena.set_camera(
-        #     camera_name="agentview",
-        #     pos="-0.9758789255999046 -1.9886114909882024 1.2507276767101316",
-        #     quat="0.7047281265258789 0.6816641688346863 -0.16726869344711304 -0.10350527614355087")
-
         ################################
         # Initialize objects of interest
         ################################
@@ -120,10 +131,9 @@ class Pressfit(SingleArmEnv):
         self.container = ContainerWithTetrapacksObject(
             name="container_with_tetrapacks",
         )
-        
-
+    
         container_obj= self.container.get_obj()
-        container_obj.set('pos', '0.2 0.0 1.0')
+        container_obj.set('pos', '0.2 0.0 1.4')
         container_obj.set('quat', '0.707 0. 0. 0.707')
 
         ###########################
@@ -139,6 +149,7 @@ class Pressfit(SingleArmEnv):
 
         self.model.merge_assets(self.container)
 
+
     def _setup_references(self):
         """
         Sets up references to important components. A reference is typically an
@@ -146,6 +157,7 @@ class Pressfit(SingleArmEnv):
         in a flatten array, which is how MuJoCo stores physical simulation data.
         """
         super()._setup_references()
+        
 
     def _setup_observables(self):
         """
@@ -155,13 +167,52 @@ class Pressfit(SingleArmEnv):
             OrderedDict: Dictionary mapping observable names to its corresponding Observable object
         """
         observables = super()._setup_observables()
+        gripper_contact = self._check_gripper_contact_with_table(self.robots[0].gripper)
         return observables
+
+    # Done
+    def _check_gripper_contact_with_table(self, model):
+        """Check if the gripper is in contact with the table or not
+
+        Args:
+            model (MujocoModel): An instance of MujocoModel
+
+        Returns:
+            boolean: True when gripper touch the table, otherwise false
+        """
+        # Make sure model is MujocoModel type
+        assert isinstance(model, MujocoModel), \
+            "Inputted model must be of type MujocoModel; got type {} instead!".format(type(model))
+        
+        # Initialize default gripper contact with table
+        self.has_touched_table = False
+        # Hard-coded regex pattern extracted from the autogenerated composite mujoco gripper model
+        gripper_regex_pattern = "^gripper0_EEG[0-9]+_[0-9]+_[0-9]+$"
+
+        # Loop through all the contacts points
+        for contact in self.sim.data.contact[: self.sim.data.ncon]:
+            # Get the corresponding geometry pairs <g1, g2>
+            g1, g2 = self.sim.model.geom_id2name(contact.geom1), self.sim.model.geom_id2name(contact.geom2)
+            # Match the hard-coded gripper regex with geometry pairs
+            match1 = re.search(gripper_regex_pattern, g1)
+            match2 = re.search(gripper_regex_pattern, g2)
+            # Check if match found
+            if match1 != None or match2 != None:
+                self.has_touched_table = True       # Gripper in contact with table
+                print(40 * '-' + "Gripper in contact with table"+ 40 * '-')
+                return self.has_touched_table
 
     def _reset_internal(self):
         """
         Resets simulation internal configurations.
         """
         super()._reset_internal()
+
+        # Set robot initial joint positions 
+        # Hard-coded values generated from tune_robot_joints.py to start robot near the container
+        self.robots[0].set_robot_joint_positions([0.000, -1.019, -0.005, -2.498, 0.050, 2.942, 0.785])
+        # Hard-coded values generated from tune_robot_joints.py to establish robot collision with table 
+        # self.robots[0].set_robot_joint_positions([0.000, -0.569, -0.005, -2.498, 0.050, 2.942, 0.785])
 
     def _check_success(self):
         """
@@ -171,6 +222,7 @@ class Pressfit(SingleArmEnv):
             bool: True if door has been opened
         """
         return False
+    
 
     def visualize(self, vis_settings):
         """

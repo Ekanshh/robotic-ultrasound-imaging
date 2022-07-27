@@ -1,11 +1,11 @@
-<mujoco model="ultrasound_probe_gripper">
+<mujoco model="tetrapack_gripper">
   <asset>
     <texture file="../textures/milk.png" name="tex-milk" type="2d"/>
     <material name="milk" reflectance="0.5" texrepeat="1 1" texture="tex-milk" texuniform="true"/>  </asset>
   <worldbody>
       <body name="gripper_base" pos="-0.004 -0.063 0.128" quat="0. 0.707 0. 0.707">
         <site name="ft_frame" group="0"/> 
-        <composite type="box" count="6 4 4" spacing="0.05" solrefsmooth="-1324.17 -17.59">
+        <composite prefix='EE' type="box" count="6 4 4" spacing="0.05" solrefsmooth=".004 1">
           <geom type="capsule" size="0.0075 0.025" rgba=".8 .2 .1 1" mass="0.001" friction="0.01 0.005 0.0001" contype="0" group="0"/>
           <skin material="milk" texcoord="true"/> 
         </composite>

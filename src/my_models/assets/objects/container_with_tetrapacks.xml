@@ -20,23 +20,23 @@ Author: Ekansh Sharma <ekansh.sharma@smail.inf.h-brs.de
         <!--Container-->
         <body name="bottom_wall" pos="0. 0. 0." quat="0. 0. 0.707 0.707">
           <inertial pos="0. 0. 0" quat="0. 0. 0.707 0.707" mass="2.43455" diaginertia="0.0913751 0.0521615 0.043714"/>
-          <geom size="0.24 0.01 0.22" type="box" friction="1 1 1" group="0"/>
+          <geom size="0.24 0.01 0.15" type="box" friction="1 1 1" group="0"/>
         </body>
         <body name="right_side_wall" pos="-0.23 0. 0.23" quat="0.707 0. 0. 0.707">
           <inertial pos="-0.22 0. 0.22" quat="0.707 0. 0. 0.707" mass="2.43455" diaginertia="0.0913751 0.0521615 0.043714"/>
-          <geom size="0.22 0.01 .22" type="box" friction="1 1 1" group="0"/>
+          <geom size="0.15 0.01 .22" type="box" friction="1 1 1" group="0"/>
         </body>
         <body name="left_side_wall" pos="0.23 0. 0.23" quat="0.707 0. 0. 0.707">
           <inertial pos="0.22 0. 0.22" quat="0.707 0. 0. 0.707" mass="2.43455" diaginertia="0.0913751 0.0521615 0.043714"/>
-          <geom size="0.22 0.01 .22" type="box" friction="1 1 1" group="0"/>
+          <geom size="0.15 0.01 .22" type="box" friction="1 1 1" group="0"/>
         </body>
-        <body name="backend_wall" pos="0. -0.22 0.23" quat="1. 0. 0. 0.">
+        <body name="backend_wall" pos="0. -0.12 0.23" quat="1. 0. 0. 0.">
           <inertial pos="0. -0.22 0.22" quat="1. 0. 0. 0." mass="2.43455" diaginertia="0.0913751 0.0521615 0.043714"/>
           <geom size="0.24 0.01 .24" type="box" friction="1 1 1" group="0"/>
         </body>
         <body name="top_wall" pos="0. 0. 0.46" quat="0. 0. 0.707 0.707">
           <inertial pos="0. 0. 0.44" quat="0. 0. 0.707 0.707" mass="2.43455" diaginertia="0.0913751 0.0521615 0.043714"/>
-          <geom size="0.24 0.01 .22" type="box" friction="1 1 1" group="0"/>
+          <geom size="0.24 0.01 .15" type="box" friction="1 1 1" group="0"/>
         </body> 
         <body name="tetrapack_1" pos="0. 0. 0.075" quat="0.5 0.5 -0.5 -0.5">
           <composite prefix="T1" type="box" count="6 4 4" spacing="0.05" solrefsmooth="-1324.17 -17.59">
@@ -56,12 +56,12 @@ Author: Ekansh Sharma <ekansh.sharma@smail.inf.h-brs.de
             <skin material="milk" texcoord="true"/> 
           </composite>
         </body>
-        <body name="tetrapack_4" pos="0. 0. 0.23" quat="0.5 0.5 -0.5 -0.5">
+        <!-- <body name="tetrapack_4" pos="0. 0. 0.23" quat="0.5 0.5 -0.5 -0.5">
           <composite prefix="T4" type="box" count="6 4 4" spacing="0.05" solrefsmooth="-1324.17 -17.59">
             <geom type="capsule" size="0.0075 0.025" rgba=".8 .2 .1 1" mass="0.001" friction="0.01 0.005 0.0001" contype="0" group="0"/>
             <skin material="milk" texcoord="true"/>
           </composite>
-        </body> 
+        </body>  -->
         <body name="tetrapack_5" pos="0.15 0. 0.23" quat="0.5 0.5 -0.5 -0.5">
           <composite prefix="T5" type="box" count="6 4 4" spacing="0.05" solrefsmooth="-1324.17 -17.59">
             <geom type="capsule" size="0.0075 0.025" rgba=".8 .2 .1 1" mass="0.001" friction="0.01 0.005 0.0001" contype="0" group="0"/>
@@ -80,12 +80,12 @@ Author: Ekansh Sharma <ekansh.sharma@smail.inf.h-brs.de
             <skin material="milk" texcoord="true"/>
           </composite>
         </body> 
-        <!-- <body name="tetrapack_8" pos="0.15 0. 0.38" quat="0.5 0.5 -0.5 -0.5">
+        <body name="tetrapack_8" pos="0.15 0. 0.38" quat="0.5 0.5 -0.5 -0.5">
           <composite prefix="T8" type="box" count="6 4 4" spacing="0.05" solrefsmooth="-1324.17 -17.59">
             <geom type="capsule" size="0.0075 0.025" rgba=".8 .2 .1 1" mass="0.001" friction="0.01 0.005 0.0001" contype="0" group="0"/>
             <skin material="milk" texcoord="true"/> 
           </composite>
-        </body> -->
+        </body>
         <body name="tetrapack_9" pos="-0.15 0. 0.38" quat="0.5 0.5 -0.5 -0.5">
           <composite prefix="T9" type="box" count="6 4 4" spacing="0.05" solrefsmooth="-1324.17 -17.59">
             <geom type="capsule" size="0.0075 0.025" rgba=".8 .2 .1 1" mass="0.001" friction="0.01 0.005 0.0001" contype="0" group="0"/>
