@@ -5,31 +5,35 @@ from robosuite.models import MujocoWorldBase
 
 
 from robosuite.models.robots import Panda
-from my_environments import Pressfit
+from my_environments import Pressfit, Ultrasound
 from utils.common import register_gripper
 from robosuite.environments.base import register_env
 
 world = MujocoWorldBase()
 
-from my_models.grippers import TetrapackGripper
+from my_models.grippers import TetrapackGripper, UltrasoundProbeGripper
 
 from robosuite.models.objects.composite import HammerObject, PotWithHandlesObject
 from robosuite.models.objects.composite_body import HingedBoxObject, ContainerWithBox
 from robosuite.utils.mjcf_utils import new_joint
 
-register_env(Pressfit)
-register_gripper(TetrapackGripper)
+# register_env(Pressfit)
+# register_gripper(TetrapackGripper)
+register_env(Ultrasound)
+register_gripper(UltrasoundProbeGripper)
 
 mujoco_robot = Panda()
 
-gripper =TetrapackGripper()
-mujoco_robot.add_gripper(gripper)
+# gripper =TetrapackGripper()
+# mujoco_robot.add_gripper(gripper)
 
+gripper = UltrasoundProbeGripper()
+mujoco_robot.add_gripper(gripper)
 mujoco_robot.set_base_xpos([0, 0, 0])
 world.merge(mujoco_robot)
 
-mujoco_arena = Pressfit(robots="Panda",  # try with other robots like "Sawyer" and "Jaco"
-    gripper_types="TetrapackGripper",
+mujoco_arena = Ultrasound(robots="Panda",  # try with other robots like "Sawyer" and "Jaco"
+    gripper_types="UltrasoundProbeGripper",
     has_renderer=True,
     has_offscreen_renderer=False,
     use_camera_obs=False,)
