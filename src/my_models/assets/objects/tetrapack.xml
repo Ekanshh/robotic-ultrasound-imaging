@@ -1,0 +1,20 @@
+ <mujoco model="tetrapacks">
+  <asset>
+    <texture file="../textures/milk.png" name="tex-milk" type="2d"/>
+    <material name="milk" reflectance="0.5" texrepeat="1 1" texture="tex-milk" texuniform="true"/>
+  </asset>
+  <worldbody>
+    <body>
+      <body name="object" pos="0. 0. 0." quat="0. 0. 0.707 0.707">
+        <inertial pos="0. 0. 0" quat="0.5 0.5 -0.5 -0.5" mass="0.1" diaginertia="0.0913751 0.0521615 0.043714"/>
+        <composite prefix="EE" type="box" count="5 8 5" spacing="0.039" solrefsmooth="0.004 1">
+            <geom type="capsule" size="0.0075 0.025" rgba=".8 .2 .1 1" mass="0.01" friction="0.01 0.005 0.0001" contype="0" group="0"/>
+            <skin material="milk" texcoord="true"/>
+        </composite>
+      </body>
+      <site name="bottom_site" pos="0 0 0." rgba="0 0 0 0" size="0.005"/>
+      <site name="top_site" pos="0 0 0.14" rgba="0 0 0 0" size="0.005"/>
+      <site name="horizontal_radius_site" pos="0.075 0.075 0." rgba="0 0 0 0" size="0.1"/>
+    </body>
+  </worldbody>
+</mujoco> 

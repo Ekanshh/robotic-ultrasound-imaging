@@ -4,97 +4,79 @@
 Author: Ekansh Sharma <ekansh.sharma@smail.inf.h-brs.de
 -->
 
+<!--TODO: Add domain randomization for different target locations using visual geometry group 1-->
 
 <mujoco model="container_with_tetrapacks">
-  <compiler inertiafromgeom='auto' angle='radian'/> 
-  <size njmax="10000" nconmax="3000"/> <!-- Increase the --> 
   <asset>
-    <!-- <texture file="../textures/skin.png" type="2d" name="skin-tex"/>
-    <material name="skin-material" reflectance="0.5" texrepeat="1 1" texture="skin-tex"/> -->
+    <!-- <mesh file="meshes/milk.stl" name="milk_mesh" scale="3 3 3"/>     -->
     <texture file="../textures/milk.png" name="tex-milk" type="2d"/>
-    <material name="milk" reflectance="0.5" texrepeat="1 1" texture="tex-milk" texuniform="true"/>
+    <material name="milk" reflectance="0.5" texrepeat="10 10" texture="tex-milk" texuniform="true"/>
   </asset>
   <worldbody>
     <body>
       <body name="object">
-        <!--Container-->
+        <!--Container walls-->
         <body name="bottom_wall" pos="0. 0. 0." quat="0. 0. 0.707 0.707">
-          <inertial pos="0. 0. 0" quat="0. 0. 0.707 0.707" mass="2.43455" diaginertia="0.0913751 0.0521615 0.043714"/>
-          <geom size="0.24 0.01 0.15" type="box" friction="1 1 1" group="0"/>
+          <!-- <inertial pos="0. 0. 0" quat="0. 0. 0.707 0.707" mass="2.43455" diaginertia="0.0913751 0.0521615 0.043714"/> -->
+          <geom size="0.24 0.01 0.15" type="box" friction="1 1 1" contype="1" conaffinity="0" group="0" condim="4"/>
         </body>
-        <body name="right_side_wall" pos="-0.23 0. 0.23" quat="0.707 0. 0. 0.707">
-          <inertial pos="-0.22 0. 0.22" quat="0.707 0. 0. 0.707" mass="2.43455" diaginertia="0.0913751 0.0521615 0.043714"/>
-          <geom size="0.15 0.01 .22" type="box" friction="1 1 1" group="0"/>
+        <body name="right_side_wall" pos="-0.23 0. 0.23" quat="0. 0. 0.707 0.707">
+          <!-- <inertial pos="-0.23 0. 0.23" quat="0. 0. 0.707 0.707" mass="2.43455" diaginertia="0.0913751 0.0521615 0.043714"/> -->
+          <geom size="0.01 0.23 .15" type="box" friction="1 1 1" contype="1" conaffinity="0" group="0" condim="4"/>
+          <!-- <geom size="0.15 0.01 .23" type="box" friction="1 1 1" group="0" condim="4"/> -->
         </body>
-        <body name="left_side_wall" pos="0.23 0. 0.23" quat="0.707 0. 0. 0.707">
-          <inertial pos="0.22 0. 0.22" quat="0.707 0. 0. 0.707" mass="2.43455" diaginertia="0.0913751 0.0521615 0.043714"/>
-          <geom size="0.15 0.01 .22" type="box" friction="1 1 1" group="0"/>
+        <body name="left_side_wall" pos="0.23 0. 0.23" quat="0. 0. 0.707 0.707">
+          <!-- <inertial pos="0.23 0. 0.23" quat="0. 0. 0.707 0.707" mass="2.43455" diaginertia="0.0913751 0.0521615 0.043714"/> -->
+          <geom size="0.01 0.23 .15" type="box" friction="1 1 1" contype="1" conaffinity="0" group="0" condim="4"/>
         </body>
-        <body name="backend_wall" pos="0. -0.12 0.23" quat="1. 0. 0. 0.">
-          <inertial pos="0. -0.22 0.22" quat="1. 0. 0. 0." mass="2.43455" diaginertia="0.0913751 0.0521615 0.043714"/>
-          <geom size="0.24 0.01 .24" type="box" friction="1 1 1" group="0"/>
+        <body name="backend_wall" pos="0. -0.12 0.23" quat="0. 0. 0.707 0.707">
+          <!-- <inertial pos="0. -0.12 0.23" quat="0. 0. 0.707 0.707" mass="2.43455" diaginertia="0.0913751 0.0521615 0.043714"/> -->
+          <geom size="0.23 0.23 .01" type="box" friction="1 1 1" contype="1" conaffinity="0" group="0" condim="4"/>
         </body>
-        <body name="top_wall" pos="0. 0. 0.46" quat="0. 0. 0.707 0.707">
-          <inertial pos="0. 0. 0.44" quat="0. 0. 0.707 0.707" mass="2.43455" diaginertia="0.0913751 0.0521615 0.043714"/>
-          <geom size="0.24 0.01 .15" type="box" friction="1 1 1" group="0"/>
+        <body name="top_wall" pos="0. 0. 0.47" quat="0. 0. 0.707 0.707">
+          <!-- <inertial pos="0. 0. 0.47" quat="0. 0. 0.707 0.707" mass="2.43455" diaginertia="0.0913751 0.0521615 0.043714"/> -->
+          <geom size="0.24 0.01 .15" type="box" friction="1 1 1" contype="1" conaffinity="0" group="0" condim="4"/>
         </body> 
-        <body name="tetrapack_1" pos="0. 0. 0.075" quat="0.5 0.5 -0.5 -0.5">
-          <composite prefix="T1" type="box" count="6 4 4" spacing="0.05" solrefsmooth="-1324.17 -17.59">
-            <geom type="capsule" size="0.0075 0.025" rgba=".8 .2 .1 1" mass="0.001" friction="0.01 0.005 0.0001" contype="0" group="0"/>
-            <skin material="milk" texcoord="true"/>
-          </composite>
+        <!--Container objects-->
+        <body name="tetrapack_1" pos="0. 0.015 0.085" quat="0. 0. 0.707 0.707">
+          <!-- <inertial pos="0. 0.015 0.085" quat="0. 0. 0.707 0.707" mass="0.1" diaginertia="0.0913751 0.0521615 0.043714"/> -->
+          <geom size="0.074 0.074 0.14" type="box" margin=".003" material="milk" contype="1" conaffinity="0" friction="1 1 1" group="0" condim="4"/>
         </body> 
-        <body name="tetrapack_2" pos="0.15 0. 0.075" quat="0.5 0.5 -0.5 -0.5">
-          <composite prefix="T2" type="box" count="6 4 4" spacing="0.05" solrefsmooth="-1324.17 -17.59">
-            <geom type="capsule" size="0.0075 0.025" rgba=".8 .2 .1 1" mass="0.001" friction="0.01 0.005 0.0001" contype="0" group="0"/>
-            <skin material="milk" texcoord="true"/> 
-          </composite>
+        <body name="tetrapack_2" pos="0.149 0.015 0.085" quat="0. 0. 0.707 0.707">
+          <!-- <inertial pos="0.149 0.015 0.085" quat="0. 0. 0.707 0.707" mass="0.1" diaginertia="0.0913751 0.0521615 0.043714"/> -->
+          <geom size="0.074 0.074 0.14" type="box" margin=".003" material="milk" contype="1" conaffinity="0"  friction="1 1 1" group="0" condim="4"/>
         </body>
-        <body name="tetrapack_3" pos="-0.15 0. 0.075" quat="0.5 0.5 -0.5 -0.5">
-          <composite prefix="T3" type="box" count="6 4 4" spacing="0.05" solrefsmooth="-1324.17 -17.59">
-            <geom type="capsule" size="0.0075 0.025" rgba=".8 .2 .1 1" mass="0.001" friction="0.01 0.005 0.0001" contype="0" group="0"/>
-            <skin material="milk" texcoord="true"/> 
-          </composite>
+        <body name="tetrapack_3" pos="-0.149 0.015 0.085" quat="0. 0. 0.707 0.707">
+          <!-- <inertial pos="-0.149 0.015 0.085" quat="0. 0. 0.707 0.707" mass="0.1" diaginertia="0.0913751 0.0521615 0.043714"/> -->
+          <geom size="0.074 0.074 0.14" type="box" margin=".003" material="milk" contype="1" conaffinity="0"  friction="1 1 1" group="0" condim="4"/>
         </body>
-        <!-- <body name="tetrapack_4" pos="0. 0. 0.23" quat="0.5 0.5 -0.5 -0.5">
-          <composite prefix="T4" type="box" count="6 4 4" spacing="0.05" solrefsmooth="-1324.17 -17.59">
-            <geom type="capsule" size="0.0075 0.025" rgba=".8 .2 .1 1" mass="0.001" friction="0.01 0.005 0.0001" contype="0" group="0"/>
-            <skin material="milk" texcoord="true"/>
-          </composite>
-        </body>  -->
-        <body name="tetrapack_5" pos="0.15 0. 0.23" quat="0.5 0.5 -0.5 -0.5">
-          <composite prefix="T5" type="box" count="6 4 4" spacing="0.05" solrefsmooth="-1324.17 -17.59">
-            <geom type="capsule" size="0.0075 0.025" rgba=".8 .2 .1 1" mass="0.001" friction="0.01 0.005 0.0001" contype="0" group="0"/>
-            <skin material="milk" texcoord="true"/> 
-          </composite>
-        </body>
-        <body name="tetrapack_6" pos="-0.15 0. 0.23" quat="0.5 0.5 -0.5 -0.5">
-          <composite prefix="T6" type="box" count="6 4 4" spacing="0.05" solrefsmooth="-1324.17 -17.59">
-            <geom type="capsule" size="0.0075 0.025" rgba=".8 .2 .1 1" mass="0.001" friction="0.01 0.005 0.0001" contype="0" group="0"/>
-            <skin material="milk" texcoord="true"/> 
-          </composite>
-        </body>
-        <body name="tetrapack_7" pos="0. 0. 0.38" quat="0.5 0.5 -0.5 -0.5">
-          <composite prefix="T7" type="box" count="6 4 4" spacing="0.05" solrefsmooth="-1324.17 -17.59">
-            <geom type="capsule" size="0.0075 0.025" rgba=".8 .2 .1 1" mass="0.001" friction="0.01 0.005 0.0001" contype="0" group="0"/>
-            <skin material="milk" texcoord="true"/>
-          </composite>
+        <!--Hard coded target location of tetrapack 4 as visual `group=1`-->
+        <body name="tetrapack_4" pos="0. 0.015 0.23" quat="0. 0. 0.707 0.707">
+          <geom size="0.074 0.074 0.14"  type="box" rgba="0.8 0.8 0.8 0.3" group="1"/> 
         </body> 
-        <body name="tetrapack_8" pos="0.15 0. 0.38" quat="0.5 0.5 -0.5 -0.5">
-          <composite prefix="T8" type="box" count="6 4 4" spacing="0.05" solrefsmooth="-1324.17 -17.59">
-            <geom type="capsule" size="0.0075 0.025" rgba=".8 .2 .1 1" mass="0.001" friction="0.01 0.005 0.0001" contype="0" group="0"/>
-            <skin material="milk" texcoord="true"/> 
-          </composite>
+        <body name="tetrapack_5" pos="0.149 0.015 0.234" quat="0. 0. 0.707 0.707">
+          <!-- <inertial pos="0.149 0.015 0.234" quat="0. 0. 0.707 0.707" mass="0.1" diaginertia="0.0913751 0.0521615 0.043714"/> -->
+          <geom size="0.074 0.074 0.14" type="box" margin=".003" material="milk" contype="1" conaffinity="0" friction="1 1 1" group="0" condim="4"/>
         </body>
-        <body name="tetrapack_9" pos="-0.15 0. 0.38" quat="0.5 0.5 -0.5 -0.5">
-          <composite prefix="T9" type="box" count="6 4 4" spacing="0.05" solrefsmooth="-1324.17 -17.59">
-            <geom type="capsule" size="0.0075 0.025" rgba=".8 .2 .1 1" mass="0.001" friction="0.01 0.005 0.0001" contype="0" group="0"/>
-            <skin material="milk" texcoord="true"/> 
-          </composite>
+        <body name="tetrapack_6" pos="-0.149 0.015 0.234" quat="0. 0. 0.707 0.707">
+          <!-- <inertial pos="-0.149 0.015 0.234" quat="0. 0. 0.707 0.707" mass="0.1" diaginertia="0.0913751 0.0521615 0.043714"/> -->
+          <geom size="0.074 0.074 0.14" type="box" margin=".003" material="milk" contype="1" conaffinity="0" friction="1 1 1" group="0" condim="4"/>
+        </body>
+        <body name="tetrapack_7" pos="0. 0.015 0.384" quat="0. 0. 0.707 0.707">
+          <!-- <inertial pos="0. 0.015 0.384" quat="0. 0. 0.707 0.707" mass="0.1" diaginertia="0.0913751 0.0521615 0.043714"/> -->
+          <geom size="0.074 0.074 0.14" type="box" margin=".003" material="milk" contype="1" conaffinity="0" friction="1 1 1" group="0" condim="4"/>
+        </body> 
+        <body name="tetrapack_8" pos="0.149 0.015 0.384" quat="0. 0. 0.707 0.707">
+          <!-- <inertial pos="0.149 0.015 0.384" quat="0. 0. 0.707 0.707" mass="0.1" diaginertia="0.0913751 0.0521615 0.043714"/> -->
+          <geom size="0.074 0.074 0.14" type="box" margin=".003" material="milk" contype="1" conaffinity="0" friction="1 1 1" group="0" condim="4"/>
+        </body>
+        <body name="tetrapack_9" pos="-0.149 0.015 0.384" quat="0. 0. 0.707 0.707">
+          <!-- <inertial pos="-0.149 0.015 0.384" quat="0. 0. 0.707 0.707" mass="0.1" diaginertia="0.0913751 0.0521615 0.043714"/> -->
+          <geom size="0.074 0.074 0.14" type="box" margin=".003" material="milk" contype="1" conaffinity="0" friction="1 1 1" group="0" condim="4"/>
         </body>
       </body>
       <site rgba="0 0 0 0" size="0.01" pos="0. 0.  0." name="bottom_site"/>
-      <site rgba="0 0 0 0" size="0.01" pos="0. 0. 0.44" name="top_site"/>
+      <site rgba="0 0 0 0" size="0.01" pos="0. 0. 0.47" name="top_site"/>
       <site rgba="0 0 0 0" size="0.05" pos="0.05 0.05 0" name="horizontal_radius_site"/>
     </body>
   </worldbody>
