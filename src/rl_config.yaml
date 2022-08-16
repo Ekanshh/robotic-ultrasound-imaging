@@ -3,8 +3,8 @@ training: True   # Whether to train a model or not
 
 # Settings for stable-baselines RL algorithm
 sb_config:
-  total_timesteps: 40.0e+6
-  check_pt_interval: 2.0e+6
+  total_timesteps: 40.0e+3
+  check_pt_interval: 5.0e+3
   num_cpu: 1
 
 # Policy settings
@@ -20,7 +20,7 @@ robosuite:
   robots: "Panda"
   use_camera_obs: false
   use_object_obs: True   # Torso obs
-  has_renderer: False
+  has_renderer: True
   has_offscreen_renderer: false
   render_camera: "agentview"
   control_freq: 500
