@@ -20,6 +20,7 @@ import argparse
 import glfw
 import numpy as np
 from my_environments import Pressfit, Ultrasound
+from my_environments.pressfit_v2 import PressfitV2
 from my_models.grippers import TetrapackGripper, UltrasoundProbeGripper
 import robosuite
 from robosuite.robots import SingleArm
@@ -245,12 +246,13 @@ def print_command(char, info):
 if __name__ == "__main__":
 
     register_env(Pressfit)
+    register_env(PressfitV2)
     register_env(Ultrasound)
     register_gripper(TetrapackGripper)
     register_gripper(UltrasoundProbeGripper)
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--env", type=str, default="Pressfit")
+    parser.add_argument("--env", type=str, default="PressfitV2")
     parser.add_argument("--robots", nargs="+", type=str, default="Panda", help="Which robot(s) to use in the env")
     parser.add_argument(
         "--init_qpos", nargs="+", type=float, default=0, help="Initial qpos to use. 0 defaults to all zeros"

@@ -1,3 +1,4 @@
+from multiprocessing.connection import wait
 import numpy as np
 from numpy import True_
 from my_environments import PressfitV2
@@ -18,12 +19,17 @@ env = suite.make(
     has_renderer=True,
     has_offscreen_renderer=False,
     use_camera_obs=False,
+    render_camera=None,
 )
 
 # reset the environment
 env.reset()
+done = True
 
-for i in range(1000):
-    action = np.random.randn(env.robots[0].dof) # sample random action
-    obs, reward, done, info = env.step(action)  # take action in the environment
-    env.render()  # render on display
+while True: 
+    env.render()
+    if done:
+        action = [0, 0, 0, 0, 0, 0, 0] # sample random action
+        obs, reward, done, info = env.step(action)  # take action in the environment
+        env.render()  # render on displa
+        done = False

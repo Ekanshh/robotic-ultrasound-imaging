@@ -129,7 +129,7 @@ class Ultrasound(SingleArmEnv):
         deterministic_trajectory=False,
         torso_solref_randomization=False,
         initial_probe_pos_randomization=False,
-        use_box_torso=True,
+        use_box_torso=False,
     ):
         assert gripper_types == "UltrasoundProbeGripper",\
             "Tried to specify gripper other than UltrasoundProbeGripper in Ultrasound environment!"

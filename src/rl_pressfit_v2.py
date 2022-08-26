@@ -15,13 +15,11 @@ from stable_baselines3.common.utils import set_random_seed
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.callbacks import CheckpointCallback
 
-from typing import Callable
 
-from my_models.grippers import TetrapackGripper, UltrasoundProbeGripper
+from my_models.grippers import TetrapackGripper
 from my_environments import PressfitV2
 from utils.common import register_gripper
 
-import gym
 
 def make_robosuite_env(env_id, options, rank, seed=0):
     """
@@ -32,10 +30,11 @@ def make_robosuite_env(env_id, options, rank, seed=0):
     :param seed: (int) the inital seed for RNG
     :param rank: (int) index of the subprocess
     """
-    def _init():
-        register_gripper(TetrapackGripper)
-        register_gripper(UltrasoundProbeGripper)
+    register_gripper(TetrapackGripper)
+    register_env(PressfitV2)
 
+    def _init():
+        
         env = GymWrapper(suite.make(env_id, **options))
         env = Monitor(env)
         env.seed(seed + rank)
@@ -44,48 +43,11 @@ def make_robosuite_env(env_id, options, rank, seed=0):
     return _init
 
 
-def make_gym_env(env_id, rank, seed=0):
-    """
-    Utility function for multiprocessed env.
-
-    :param env_id: (str) the environment ID
-    :param seed: (int) the inital seed for RNG
-    :param rank: (int) index of the subprocess
-    """
-    def _init():
-        env = gym.make(env_id, reward_type="dense")
-        env = gym.wrappers.FlattenObservation(env)
-        env = Monitor(env)
-        env.seed(seed + rank)
-        return env
-    set_random_seed(seed)
-    return _init
-
-
-def linear_schedule(initial_value: float) -> Callable[[float], float]:
-    """
-    Linear learning rate schedule.
-
-    :param initial_value: Initial learning rate.
-    :return: schedule that computes
-      current learning rate depending on remaining progress
-    """
-    def func(progress_remaining: float) -> float:
-        """
-        Progress will decrease from 1 (beginning) to 0.
-
-        :param progress_remaining:
-        :return: current learning rate
-        """
-        return progress_remaining * initial_value
-
-    return func
-
 
 if __name__ == '__main__':
 
+    register_gripper(TetrapackGripper)
     register_env(PressfitV2)
-    register_env(Ultrasound)
 
     with open("rl_config.yaml", 'r') as stream:
         config = yaml.safe_load(stream)
@@ -128,14 +90,17 @@ if __name__ == '__main__':
     training = config["training"]
     seed = config["seed"]
 
+    print("Before Training")
     # RL pipeline
     if training:
         env = SubprocVecEnv([make_robosuite_env(env_id, env_options, i, seed) for i in range(num_cpu)])
 
         # Create callback
-        checkpoint_callback = CheckpointCallback(save_freq=check_pt_interval, save_path='./checkpoints/', 
+        checkpoint_callback = CheckpointCallback(save_freq=check_pt_interval, save_path='./logs/checkpoints/', 
                                 name_prefix=save_model_filename, verbose=2)
+
         print(True if continue_training_model_filename is None else False)
+        
         # Train new model
         if continue_training_model_filename is None:
 
@@ -143,7 +108,7 @@ if __name__ == '__main__':
             env = VecNormalize(env)
 
             # Create model
-            model = PPO(policy_type, env, policy_kwargs=policy_kwargs, tensorboard_log=tb_log_folder, verbose=1)
+            model = PPO(policy_type, env,  policy_kwargs=policy_kwargs, n_steps= 1000, tensorboard_log=tb_log_folder, verbose=1)
 
             print("Created a new model")
 
@@ -172,8 +137,6 @@ if __name__ == '__main__':
     else:
         # Create evaluation environment
         env_options['has_renderer'] = True
-        register_gripper(TetrapackGripper)
-        register_gripper(UltrasoundProbeGripper)
         env_gym = GymWrapper(suite.make(env_id, **env_options))
         env = DummyVecEnv([lambda : env_gym])
 

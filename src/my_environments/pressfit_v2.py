@@ -1,55 +1,42 @@
-from cgi import print_environ_usage
-import numpy as np
-from my_models.objects.xml_objects import TetrapackObject
-
-import robosuite.utils.transform_utils as T
-from robosuite.environments.manipulation.two_arm_env import TwoArmEnv
-from robosuite.models.arenas import EmptyArena
-from robosuite.models.objects import CylinderObject, PlateWithHoleObject
-from robosuite.models.tasks import ManipulationTask
-from robosuite.utils.mjcf_utils import CustomMaterial, array_to_string, find_elements
-from robosuite.utils.observables import Observable, sensor
-
-
 # Python imports
-from distutils.log import warn
 import re
-from warnings import WarningMessage
 import numpy as np
 from my_models.arenas.pressfit_arena import PressfitArena
 # Local imports
 from my_models.objects import ContainerWithTetrapacksObject
 # Robosuite imports
+import robosuite.utils.transform_utils as T
 from robosuite.environments.manipulation.single_arm_env import SingleArmEnv
 from robosuite.models.arenas import TableArena
+from robosuite.models.objects import CylinderObject
+
 from robosuite.models.tasks import ManipulationTask
 from robosuite.utils.observables import Observable, sensor
 from robosuite.utils.placement_samplers import UniformRandomSampler
 from robosuite.utils.mjcf_utils import find_elements
 from robosuite.models.base import MujocoModel
 
-import xml.etree.ElementTree as ET
+from my_models.grippers import TetrapackGripper
 
-
-class PressfitV2(SingleArmEnv):
-
+class PressfitV2(SingleArmEnv):  
     def __init__(
         self,
         robots,
         env_configuration="default",
         controller_configs=None,
         gripper_types="TetrapackGripper",
+        initialization_noise="default",
         table_full_size=(1.0, 1.0, 0.05),       # Table properties
         table_friction= 100*(1., 5e-3, 1e-4),
-        initialization_noise="default",
-        use_camera_obs=True,
+        use_camera_obs=False,
         use_object_obs=True,
         reward_scale=1.0,
-        reward_shaping=False,
-        has_renderer=False,
+        reward_shaping=True,
+        placement_initializer=None,
+        has_renderer=True,
         has_offscreen_renderer=True,
         render_camera="customview",
-        render_collision_mesh=True,
+        render_collision_mesh=False,
         render_visual_mesh=True,
         render_gpu_device_id=-1,
         control_freq=20,
@@ -60,12 +47,25 @@ class PressfitV2(SingleArmEnv):
         camera_heights=256,
         camera_widths=256,
         camera_depths=False,
+        early_termination= False,
+        save_data = False,
         camera_segmentations=None,  # {None, instance, class, element}
         renderer="mujoco",
         renderer_config=None,
     ):
-        # Assert that the gripper type is None
-        # assert gripper_types is None, "Tried to specify gripper other than None in TwoArmPegInHole environment!"
+    
+        # Check if the gripper is correct
+        # assert gripper_types == "TetrapackGripper",\
+        #     "Tried to specify gripper other than TetrapackGripper in Pressfit environment!"
+
+        # Check if the robot is correct
+        assert robots == "Panda", \
+            "Robot must be Panda!"
+
+        # Setting table properties
+        self.table_full_size = table_full_size
+        self.table_friction = table_friction
+        self.table_offset =  np.array((0.2, 0, 1.4))
 
         # reward configuration
         self.reward_scale = reward_scale
@@ -74,15 +74,11 @@ class PressfitV2(SingleArmEnv):
         # whether to use ground-truth object states
         self.use_object_obs = use_object_obs
 
-        self.table_full_size = table_full_size
-        self.table_friction = table_friction
-        self.table_offset =  np.array((0.2, 0, 1.4))
-
         super().__init__(
             robots=robots,
             env_configuration=env_configuration,
             controller_configs=controller_configs,
-            mount_types="default",
+            mount_types="RethinkMount",
             gripper_types=gripper_types,
             initialization_noise=initialization_noise,
             use_camera_obs=use_camera_obs,
@@ -137,6 +133,9 @@ class PressfitV2(SingleArmEnv):
 
     def _load_model(self):
 
+        from utils.common import register_gripper
+        register_gripper(TetrapackGripper)
+        
         super()._load_model()
 
         # Adjust base pose(s) accordingly
@@ -153,29 +152,24 @@ class PressfitV2(SingleArmEnv):
         # Arena always gets set to zero origin
         mujoco_arena.set_origin([0, 0, 0])
 
-        # Modify default agentview camera
-        mujoco_arena.set_camera(
-            camera_name="agentview",
-            pos=[1.0666432116509934, 1.4903257668114777e-08, 2.0563394967349096],
-            quat=[0.6530979871749878, 0.27104058861732483, 0.27104055881500244, 0.6530978679656982],
-        )
 
         # initialize objects of interest
         self.hole = ContainerWithTetrapacksObject(name="container_with_tetrapacks")
         
         # To check if the hole is correctly shown in simulation
-        # self.peg_radius=(0.01, 0.03)
-        # self.peg_length=0.07
-        # self.peg = CylinderObject(
-        #     name="peg",
-        #     size_min=(self.peg_radius[0], self.peg_length),
-        #     size_max=(self.peg_radius[1], self.peg_length),
-        #     rgba=[0, 1, 0, 1],
-        #     joints=None,
-        # )
-        # peg_obj = self.peg.get_obj()
-        # peg_obj.set('pos', '-0.242 0.059 1.585' )
-        # peg_obj.set('quat', '-0.500 0.500 0.500 -0.500')
+        self.peg_radius=(0.01, 0.03)
+        self.peg_length=0.07
+        self.peg = CylinderObject(
+            name="peg",
+            size_min=(self.peg_radius[0], self.peg_length),
+            size_max=(self.peg_radius[1], self.peg_length),
+            rgba=[0, 1, 0, 1],
+            joints=None,
+            
+        )
+        peg_obj = self.peg.get_obj()
+        peg_obj.set('pos', '-0.242 0.059 1.585' )
+        peg_obj.set('quat', '-0.500 0.500 0.500 -0.500')
 
         # Load hole object
         hole_obj = self.hole.get_obj()
