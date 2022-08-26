@@ -1,4 +1,4 @@
-name: rl_ultrasound
+name: robotic_ultrasound_imaging
 dependencies:
   - python=3.8
   - pip
