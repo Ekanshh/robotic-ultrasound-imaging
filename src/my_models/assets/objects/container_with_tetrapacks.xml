@@ -52,7 +52,8 @@ Author: Ekansh Sharma <ekansh.sharma@smail.inf.h-brs.de
         </body>
         <!--Hard coded target location of tetrapack 4 as visual `group=1`-->
         <body name="tetrapack_4" pos="0. 0.015 0.23" quat="0. 0. 0.707 0.707">
-          <geom size="0.074 0.074 0.14"  type="box" rgba="0.8 0.8 0.8 0.3" group="1"/> 
+          <site name="tetrapack_4" size="0.074 0.074 0.14" rgba="1 0 0 0.5" type="box" group="1"/>
+          <!-- <geom size="0.01 0.01 0.01"  type="box" rgba="0.8 0.8 0.8 0.3" group="1"/>  -->
         </body> 
         <body name="tetrapack_5" pos="0.149 0.015 0.234" quat="0. 0. 0.707 0.707">
           <!-- <inertial pos="0.149 0.015 0.234" quat="0. 0. 0.707 0.707" mass="0.1" diaginertia="0.0913751 0.0521615 0.043714"/> -->
